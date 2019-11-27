@@ -46,5 +46,6 @@
     "watchPathIgnorePatterns": [
       "<rootDir>/node_modules/"
     ]
-  }
+  },
+  "proxy": "http://localhost:8001"
 }
