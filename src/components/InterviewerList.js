@@ -1,9 +1,11 @@
-import React from "react";
+import React, {useState} from "react";
 import "components/InterviewerList.scss";
 import InterviewerListItem from "components/InterviewerListItem";
 
 
 export default function InterviewerList(props) {
+  // console.log(props.value)
+
     return (
       <section className="interviewers">
       <h4 className="interviewers__header text--light">Interviewer</h4>
@@ -13,8 +15,8 @@ export default function InterviewerList(props) {
               key={interviewer.id} 
               name={interviewer.name} 
               avatar={interviewer.avatar}
-              selected={interviewer.id === props.value}
-              setInterviewer={event => props.onChange(interviewer.id)}
+              selected={interviewer === props.value}
+              setInterviewer={event => props.onChange(interviewer)}
       />)})
       }
             </ul>

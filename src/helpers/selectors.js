@@ -72,3 +72,21 @@ export function getInterview(state, interview) {
   }
   return answer
 }
+
+export function getInterviewersForDay(state, day) {
+  let days = state.days;
+  let interviewers = state.interviewers;
+  let appArray;
+  let finalArray = []
+  for(const item of days) {
+    if(item.name === day) {
+      appArray = item.interviewers
+    }
+  }
+  if(appArray) {
+    for(const key of appArray) {
+      finalArray.push(interviewers[key])
+    }
+  }
+ return finalArray;
+}
