@@ -4,8 +4,8 @@ import { stat } from "fs";
 
 export default function useApplicationData() {
   const SET_DAY = "SET_DAY";
-const SET_APPLICATION_DATA = "SET_APPLICATION_DATA";
-const SET_INTERVIEW = "SET_INTERVIEW";
+  const SET_APPLICATION_DATA = "SET_APPLICATION_DATA";
+  const SET_INTERVIEW = "SET_INTERVIEW";
 
 function reducer(state, action) {
   switch (action.type) {
@@ -14,6 +14,8 @@ function reducer(state, action) {
     case SET_APPLICATION_DATA:
       return { ...state, ...action.value}
     case SET_INTERVIEW: {
+      
+    
       return {...state, ...action.value}
     }
     default:
@@ -22,6 +24,7 @@ function reducer(state, action) {
       );
   }
 }
+
   const [state, dispatch] = useReducer(reducer, 
     { 
     day: "Monday",
@@ -29,6 +32,7 @@ function reducer(state, action) {
     appointments: {},
     interviewers: {}
   })
+
   useEffect(() => {
     Promise.all([
       Promise.resolve(axios.get('http://localhost:8001/api/days')), 
@@ -43,14 +47,23 @@ function reducer(state, action) {
     });
   }, []);
   
+   
   return { 
     state,
     setDay: day => dispatch({type: SET_DAY, value:{ day }}),
     deleteInterview: (id) => {
+    let days = [...state.days]
+    let day = state.days.filter(day => day.appointments.includes(id))[0]
+    day.spots++
+    days[day.id-1] = day
+    
+   
+    
       return axios.delete('http://localhost:8001/api/appointments/'+id)
       .then(res => {
         if(res.status === 204) {
-        dispatch({type: SET_INTERVIEW, value: {interview: null}})
+        
+        dispatch({type: SET_INTERVIEW, value: { days, interview: null}})
         }
       })
       .catch(error => {
@@ -58,6 +71,11 @@ function reducer(state, action) {
       })
     },
      bookInterview(id, interview) {
+      let days = [...state.days]
+      let day = state.days.filter(day => day.appointments.includes(id))[0]
+      day.spots--
+      days[day.id-1] = day
+      
       const appointment = {
         ...state.appointments[id],
         interview: { ...interview }
@@ -66,11 +84,10 @@ function reducer(state, action) {
         ...state.appointments,
         [id]: appointment
       };
-      console.log(appointment)
       return axios.put('http://localhost:8001/api/appointments/'+id, appointment)
       .then(res => {
         if(res.status === 204) {
-          dispatch({type: SET_INTERVIEW, value: {appointments}})
+          dispatch({type: SET_INTERVIEW, value: { days, appointments}})
         }
       })
       .catch(error => {
