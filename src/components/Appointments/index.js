@@ -54,7 +54,7 @@ export default function Apointment(props) {
     props.interview ? SHOW : EMPTY
   )
  
-  return (<article className="appointment">
+  return (<article data-testid="appointment" className="appointment">
     <Header time={props.time}/>
     {mode === ERROR_SAVE && <Error message="Could Not Save Appointmnent" onClose={()=> back()}/>}
     {mode === ERROR_DELETE && <Error message ="Could Not Delete Appointment" onClose={()=> back()}/>}
