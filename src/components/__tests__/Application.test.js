@@ -15,8 +15,13 @@ import axios from "axios";
   A test that renders a React Component
 */
 afterEach(cleanup);
+beforeEach(()=> {
+  axios.get('/api/debug/reset')
+})
+
 
 describe("Application", () => {
+  
   it("changes the schedule whe n a new day is selected", async () => {
     const { container } = render(<Application />);
   
@@ -49,7 +54,7 @@ describe("Application", () => {
     expect(getByText(day, "no spots remaining")).toBeInTheDocument();
 
   });
-  xit("loads data, cancels an interview and increases the spots remaining for Monday by 1", async () => {
+  it("loads data, cancels an interview and increases the spots remaining for Monday by 1", async () => {
     // 1. Render the Application.
     const { container, debug } = render(<Application />);
     // 2. Wait until the text "Archie Cohen" is displayed.
@@ -73,7 +78,7 @@ describe("Application", () => {
     const day = getAllByTestId(container, "day").find(day =>
       queryByText(day, "Monday")
     );
-    expect(getByText(day, "2 spots remaining")).toBeInTheDocument();
+    expect(getByText(day, "1 spot remaining")).toBeInTheDocument();
 
   });
   it("loads data, edits an interview and keeps the spots remaining for Monday the same", async () => {
@@ -83,7 +88,7 @@ describe("Application", () => {
     const appointment = getAllByTestId(container, "appointment").find(
       appointment => queryByText(appointment, "Archie Cohen")
     );
-    debug()
+    
     fireEvent.click(queryByAltText(appointment, "Edit"))
     fireEvent.change(getByPlaceholderText(appointment, /enter student name/i), {
       target: { value: "Lydia Miller-Jones" }
@@ -96,7 +101,7 @@ describe("Application", () => {
       queryByText(day, "Monday")
     );
     expect(queryByText(container, "Archie Cohen")).toBeNull()
-    expect(getByText(day, "no spots remaining")).toBeInTheDocument();
+    expect(getByText(day, "1 spot remaining")).toBeInTheDocument();
     
 
   });
@@ -120,7 +125,6 @@ describe("Application", () => {
     fireEvent.click(getByText(appointment, "Save"));
     expect(getByText(appointment, "Saving")).toBeInTheDocument();
     await waitForElementToBeRemoved(() => getByText(appointment, "Saving"))
-    debug()
     expect(getByText(appointment, /error/i)).toBeInTheDocument();
 
   });
@@ -141,7 +145,6 @@ describe("Application", () => {
     fireEvent.click(queryByText(appointment, "Confirm"))
     expect(getByText(appointment, "Deleting")).toBeInTheDocument();
     await waitForElementToBeRemoved(() => getByText(appointment, "Deleting"))
-    debug()
     expect(getByText(appointment, /error/i)).toBeInTheDocument();
 
   });
