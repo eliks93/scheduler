@@ -1,6 +1,6 @@
 # Interview Scheduler
 
-A simple interview scheduling application. Save, edit, and delete interviews using this React application.
+A simple interview scheduling application. Save, edit, and delete interviews using this React application. Note, must have seperate backend, scheduler-api to run. Repo can be cloned from https://github.com/lighthouse-labs/scheduler-api. 
 
 ## Screeshots
 
