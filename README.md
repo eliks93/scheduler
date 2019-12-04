@@ -1,5 +1,7 @@
 # Interview Scheduler
 
+A simple interview scheduling application. Save, edit, and delete interviews using this React application. 
+
 ## Setup
 
 Install dependencies with `npm install`.

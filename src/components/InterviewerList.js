@@ -4,8 +4,6 @@ import InterviewerListItem from "components/InterviewerListItem";
 import PropTypes from "prop-types";
 
 export default function InterviewerList(props) {
-  // console.log(props.value)
-
   return (
     <section className="interviewers">
       <h4 className="interviewers__header text--light">Interviewer</h4>
