@@ -30,10 +30,9 @@ export default function Apointment(props) {
     };
     transition(SAVING)
     props.bookInterview(props.id, interview)
-    
     .then((error) => { 
       if(!error) {
-      transition(SHOW)
+        transition(SHOW)
       } else {
         transition(ERROR_SAVE, true)
       }

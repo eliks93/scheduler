@@ -1,4 +1,4 @@
-import { statSync } from "fs";
+// import { statSync } from "fs";
 
 // const state = {
 //   interviewers: {
@@ -73,6 +73,7 @@ export function getInterview(state, interview) {
   return answer
 }
 
+
 export function getInterviewersForDay(state, day) {
   let days = state.days;
   let interviewers = state.interviewers;
@@ -90,3 +91,4 @@ export function getInterviewersForDay(state, day) {
   }
  return finalArray;
 }
+

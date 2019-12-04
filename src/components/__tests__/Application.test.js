@@ -4,13 +4,13 @@ import React from "react";
   We import our helper functions from the react-testing-library
   The render function allows us to render Components
 */
-import { queryByAltText, queryByText, getAllByTestId, getByAltText, getByPlaceholderText, prettyDOM, cleanup, fireEvent, render, waitForElement, getByText } from "@testing-library/react";
+import { queryByAltText, queryByText, getAllByTestId, getByAltText, getByPlaceholderText, prettyDOM, cleanup, fireEvent, render, waitForElement, getByText, getByTestId, waitForElementToBeRemoved } from "@testing-library/react";
 /*
   We import the component that we are testing
 */
 import Application from "components/Application";
 
-
+import axios from "axios";
 /*
   A test that renders a React Component
 */
@@ -49,7 +49,7 @@ describe("Application", () => {
     expect(getByText(day, "no spots remaining")).toBeInTheDocument();
 
   });
-  it("loads data, cancels an interview and increases the spots remaining for Monday by 1", async () => {
+  xit("loads data, cancels an interview and increases the spots remaining for Monday by 1", async () => {
     // 1. Render the Application.
     const { container, debug } = render(<Application />);
     // 2. Wait until the text "Archie Cohen" is displayed.
@@ -68,17 +68,84 @@ describe("Application", () => {
     // 6. Check that the element with the text "Deleting" is displayed.
     expect(getByText(container, "Deleting")).toBeInTheDocument();
     // 7. Wait until the element with the "Add" button is displayed.
-    
-    
-
+    await waitForElementToBeRemoved (() => getByText(container, "Deleting"));
     // 8. Check that the DayListItem with the text "Monday" also has the text "2 spots remaining".
-    await waitForElement(() => getByAltText(appointment, "Add"));
     const day = getAllByTestId(container, "day").find(day =>
       queryByText(day, "Monday")
     );
     expect(getByText(day, "2 spots remaining")).toBeInTheDocument();
 
   });
+  it("loads data, edits an interview and keeps the spots remaining for Monday the same", async () => {
+    const { container, debug } = render(<Application />);
+    await waitForElement(() => getByText(container, "Archie Cohen"));
+    
+    const appointment = getAllByTestId(container, "appointment").find(
+      appointment => queryByText(appointment, "Archie Cohen")
+    );
+    debug()
+    fireEvent.click(queryByAltText(appointment, "Edit"))
+    fireEvent.change(getByPlaceholderText(appointment, /enter student name/i), {
+      target: { value: "Lydia Miller-Jones" }
+  });
+    fireEvent.click(getByText(appointment, "Save"));
+    expect(getByText(container, "Saving")).toBeInTheDocument();
+   
+    await waitForElement(() => getByText(appointment, "Lydia Miller-Jones"));
+    const day = getAllByTestId(container, "day").find(day =>
+      queryByText(day, "Monday")
+    );
+    expect(queryByText(container, "Archie Cohen")).toBeNull()
+    expect(getByText(day, "no spots remaining")).toBeInTheDocument();
+    
+
+  });
+  it("shows the save error when failing to save an appointment", async () => {
+    axios.put.mockRejectedValueOnce(() => Promise.reject({
+      status: 500,
+      statusText: "No Content",
+    }));
+    const { container, debug } = render(<Application />);
+    await waitForElement(() => getByText(container, "Archie Cohen")); 
+
+    const appointment = getAllByTestId(container, "appointment").find(
+      appointment => queryByText(appointment, "Archie Cohen")
+    );
+
+    fireEvent.click(queryByAltText(appointment, "Edit"))
+    fireEvent.change(getByPlaceholderText(appointment, /enter student name/i), {
+      target: { value: "Lydia Miller-Jones" }
+    });
+
+    fireEvent.click(getByText(appointment, "Save"));
+    expect(getByText(appointment, "Saving")).toBeInTheDocument();
+    await waitForElementToBeRemoved(() => getByText(appointment, "Saving"))
+    debug()
+    expect(getByText(appointment, /error/i)).toBeInTheDocument();
+
+  });
+  it("shows the delete error when failing to delete an appointment", async () => {
+    axios.delete.mockRejectedValueOnce(() => Promise.reject({
+      status: 500,
+      statusText: "No Content",
+    }));
+    const { container, debug } = render(<Application />);
+    await waitForElement(() => getByText(container, "Archie Cohen")); 
+
+    const appointment = getAllByTestId(container, "appointment").find(
+      appointment => queryByText(appointment, "Archie Cohen")
+    );
+
+    fireEvent.click(queryByAltText(appointment, "Delete"))
+    expect(getByText(appointment, "Delete the appointment?")).toBeInTheDocument();
+    fireEvent.click(queryByText(appointment, "Confirm"))
+    expect(getByText(appointment, "Deleting")).toBeInTheDocument();
+    await waitForElementToBeRemoved(() => getByText(appointment, "Deleting"))
+    debug()
+    expect(getByText(appointment, /error/i)).toBeInTheDocument();
+
+  });
+  
   
 })
 
